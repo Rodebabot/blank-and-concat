@@ -1,0 +1,39 @@
+import pandas as pd
+
+def concatenate_columns(file_path, output_file_path):
+    # Read the Excel file into a DataFrame
+    df = pd.read_excel(file_path)
+    concatenated_rows = []
+
+    # Iterate over each row in the DataFrame
+    for index, row in df.iterrows():
+        cusip_index = None  # Index of the column containing the word "cusip"
+
+        # Iterate over each column in the current row
+        for col_index, value in enumerate(row):
+            if isinstance(value, str) and "cusip" in value.lower():
+                cusip_index = col_index
+                break  # Stop searching if "cusip" is found
+
+        # Concatenate the values from the 2nd column to the previous column of the "cusip" column
+        if cusip_index is not None:
+            concatenated_row = " ".join(map(str, row[1:cusip_index]))
+            concatenated_rows.append(concatenated_row)
+            # Drop the columns that were used for concatenation
+            df.iloc[index, 1:cusip_index] = None
+        else:
+            concatenated_rows.append(None)  # Append None for rows without "cusip" column
+
+    # Add the concatenated column to the DataFrame
+    df["Concatenated"] = concatenated_rows
+
+    # Save the updated DataFrame to a new Excel file
+    df.to_excel(output_file_path, index=False)
+
+# Provide the file paths
+input_file_path = r'C:\Users\Admin\Desktop\jussssssssssssssst.xlsx'
+output_file_path =  r'C:\Users\Admin\Desktop\WHATTT2.xlsx'
+# Call the function to concatenate columns and create the new Excel file
+concatenate_columns(input_file_path, output_file_path)
+
+print("New Excel file created successfully!")
